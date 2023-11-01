@@ -1,0 +1,667 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <style>
+    /* Hide the default scrollbar and ensure it doesn't take up space */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    /* Define the scrollbar track (the background) */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Define the scrollbar handle (the draggable part) */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    /* Add smooth transition for the scrollbar */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+      transition: background 0.3s ease-in-out;
+    }
+
+    /* Ensure the scrollbar is still visible on hover */
+    ::-webkit-scrollbar-thumb:active {
+      background: #555;
+    }
+
+    /* Make the scrollbar shorter when it's not being hovered */
+    ::-webkit-scrollbar-thumb:vertical {
+      height: 20px; /* Adjust the height as needed */
+    }
+
+    /* Ensure the scrollbar handle is still draggable when it's shorter */
+    ::-webkit-scrollbar-thumb:horizontal {
+      width: 20px; /* Adjust the width as needed */
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .like-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .like-button.animated {
+      -webkit-animation: pop 0.9s both;
+      animation: pop 0.9s both;
+    }
+    .like-button svg {
+      opacity: 1;
+    }
+    .like-button svg path {
+      fill: #333;
+      transition: fill 0.4s ease-out;
+    }
+    .like-button.active svg path {
+      fill: #2196f3;
+    }
+
+    @-webkit-keyframes pop {
+      0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+      30% {
+        -webkit-transform: scale3d(1.25, 0.75, 1);
+        transform: scale3d(1.25, 0.75, 1);
+      }
+      40% {
+        -webkit-transform: scale3d(0.75, 1.25, 1);
+        transform: scale3d(0.75, 1.25, 1);
+      }
+      50% {
+        -webkit-transform: scale3d(1.15, 0.85, 1);
+        transform: scale3d(1.15, 0.85, 1);
+      }
+      65% {
+        -webkit-transform: scale3d(0.95, 1.05, 1);
+        transform: scale3d(0.95, 1.05, 1);
+      }
+      75% {
+        -webkit-transform: scale3d(1.05, 0.95, 1);
+        transform: scale3d(1.05, 0.95, 1);
+      }
+      100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+    }
+
+    @keyframes pop {
+      0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+      30% {
+        -webkit-transform: scale3d(1.25, 0.75, 1);
+        transform: scale3d(1.25, 0.75, 1);
+      }
+      40% {
+        -webkit-transform: scale3d(0.75, 1.25, 1);
+        transform: scale3d(0.75, 1.25, 1);
+      }
+      50% {
+        -webkit-transform: scale3d(1.15, 0.85, 1);
+        transform: scale3d(1.15, 0.85, 1);
+      }
+      65% {
+        -webkit-transform: scale3d(0.95, 1.05, 1);
+        transform: scale3d(0.95, 1.05, 1);
+      }
+      75% {
+        -webkit-transform: scale3d(1.05, 0.95, 1);
+        transform: scale3d(1.05, 0.95, 1);
+      }
+      100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+    }
+  </style>
+  <body>
+    <!-- component -->
+    <!-- Component Start -->
+    <div class="flex justify-center w-screen h-screen px-4 text-gray-700">
+      <div class="flex w-full max-w-screen-2xl">
+        <div class="flex flex-col w-44 py-4 pr-3">
+          <a
+            class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300"
+            href="{% url 'home_page' %}"
+            >Home</a
+          >
+
+          <a
+            class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300"
+            href="{% url 'profile_view' %}"
+            >Profile</a
+          >
+          <a
+            href="{% url 'logout' %}"
+            class="flex px-3 py-2 mt-auto text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+          >
+            {% if request.user.is_authenticated %}
+            <span class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full">
+              {% if request.user.userprofile.profile_picture %}
+              <img
+                src="{{ request.user.userprofile.profile_picture.url }}"
+                class="h-10 w-10 rounded-full object-cover"
+                alt="{{ question.user.username }}'s Profile Picture"
+              />
+              {% else %}
+              <!-- Display a default image or a message if there's no profile picture -->
+              <img
+                src="{% static 'default_image.png' %}"
+                class="h-10 w-10 rounded-full object-cover"
+                alt="Default Profile Picture"
+              />
+              {% endif %}
+            </span>
+            <div class="flex flex-col ml-2 bg">
+              <span class="mt-1 text-sm font-semibold leading-none"
+                >Logout</span
+              >
+              <span class="mt-1 text-xs leading-none">{{user.username}}</span>
+            </div></a
+          >
+          {% else %}
+          <a
+            href="{% url 'login' %}"
+            class="flex px-3 py-2 mt-2 mt-auto text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+            >Login
+          </a>
+          <a
+            href="{% url 'signup' %}"
+            class="flex px-3 py-2 mt-2 text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+            >Signup</a
+          >
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col flex-grow border-l border-r border-gray-300">
+          <div
+            class="flex justify-between flex-shrink-0 px-8 py-4 border-b border-gray-300"
+          >
+            <h1 class="text-3xl font-semibold text-[#B92B27]">Quora</h1>
+          </div>
+
+          <div>
+            <div class="flex w-[99%] p-4 border m-1 border-gray-700 rounded-lg">
+              <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full">
+                {% if qstn.user.userprofile.profile_picture %}
+                <img
+                  src="{{ qstn.user.userprofile.profile_picture.url }}"
+                  class="h-12 w-12 rounded-full object-cover"
+                  alt="{{ question.user.username }}'s Profile Picture"
+                />
+                {% else %}
+                <!-- Display a default image or a message if there's no profile picture -->
+                <img
+                  src="{% static 'default_image.png' %}"
+                  class="h-12 w-12 rounded-full object-cover"
+                  alt="Default Profile Picture"
+                />
+                {% endif %}</span
+              >
+              <div class="flex flex-col flex-grow ml-4">
+                <div class="flex">
+                  <span class="font-semibold capitalize">@{{qstn.user}}</span>
+
+                  <span class="ml-auto text-sm"
+                    >{{ qstn.time_since_created }}</span
+                  >
+                </div>
+                <!-- <p class="mt-1 font-bold text-blue-400 capitalize">
+                  {{Q.title}} ? <a class="underline" href="#"></a>
+                </p> -->
+                <p class="mt-1 text-[#195FAA] font-bold normal-case">
+                  {{qstn.content}} <a class="underline" href="#"></a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="answer-container" class="flex-grow h-0 overflow-auto">
+            <form
+              method="POST"
+              class="border rounded-lg mb-5 w-[99%] m-1 border-gray-400"
+              action="{% url 'create_answer' qstn.id %}"
+            >
+              {% csrf_token %}
+              <div class="flex w-full p-8 border-gray-300">
+                <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full">
+                  {% if request.user.userprofile.profile_picture %}
+                  <img
+                    src="{{ request.user.userprofile.profile_picture.url }}"
+                    class="h-12 w-12 rounded-full object-cover"
+                    alt="{{ question.user.username }}'s Profile Picture"
+                  />
+                  {% else %}
+                  <!-- Display a default image or a message if there's no profile picture -->
+                  <img
+                    src="{% static 'default_image.png' %}"
+                    class="h-12 w-12 rounded-full object-cover"
+                    alt="Default Profile Picture"
+                  />
+                  {% endif %}</span
+                >
+                <div class="flex flex-col flex-grow ml-4">
+                  <textarea
+                    class="p-3 bg-transparent border border-gray-500 rounded-sm"
+                    name="content"
+                    rows="1"
+                    placeholder="Write your answer here..."
+                    required
+                  ></textarea>
+                  <div class="flex justify-between mt-2">
+                    <!-- <button class="flex items-center h-8 px-3 text-xs rounded-sm hover:bg-gray-200">Attach</button> -->
+                    <button
+                      class="flex items-center h-8 px-3 text-xs rounded-sm bg-gray-300 hover:bg-gray-400"
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            {% for A in answers %}
+            <div class="flex w-[99%] m-1 p-8 rounded-md border border-gray-300">
+              <span class="flex-shrink-0 w-14 h-14 bg-gray-400 rounded-full">
+                {% if A.user.userprofile.profile_picture %}
+                <img
+                  src="{{ A.user.userprofile.profile_picture.url }}"
+                  class="h-14 w-14 rounded-full object-cover"
+                  alt="{{ question.user.username }}'s Profile Picture"
+                />
+                {% else %}
+                <!-- Display a default image or a message if there's no profile picture -->
+                <img
+                  src="{% static 'default_image.png' %}"
+                  class="h-14 w-14 rounded-full object-cover"
+                  alt="Default Profile Picture"
+                />
+                {% endif %}
+              </span>
+              <div class="flex flex-col flex-grow ml-4">
+                <div class="flex">
+                  <span class="font-semibold capitalize">@{{A.user}}</span>
+
+                  <span class="ml-auto text-sm"
+                    >{{ A.time_since_created }}</span
+                  >
+                </div>
+                <!-- <p class="mt-1 font-bold text-blue-400 capitalize">
+                  {{Q.title}} ? <a class="underline" href="#"></a>
+                </p> -->
+                <p class="mt-1 text-[#2c3035]">
+                  {{A.content}} <a class="underline" href="#"></a>
+                </p>
+
+                <div class="flex mt-2">
+                  {% if request.user in A.likes.all %}
+                  <button class="text-sm font-semibold mr-4">
+                    <a
+                      href="{% url 'like_answers' A.id A.question.id %}"
+                      class="like-button active"
+                      onclick="animateLike({{ A.id }})"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 1792 1792"
+                        fill="blue"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M320 1344q0-26-19-45t-45-19q-27 0-45.5 19t-18.5 45q0 27 18.5 45.5t45.5 18.5q26 0 45-18.5t19-45.5zm160-512v640q0 26-19 45t-45 19h-288q-26 0-45-19t-19-45v-640q0-26 19-45t45-19h288q26 0 45 19t19 45zm1184 0q0 86-55 149 15 44 15 76 3 76-43 137 17 56 0 117-15 57-54 94 9 112-49 181-64 76-197 78h-129q-66 0-144-15.5t-121.5-29-120.5-39.5q-123-43-158-44-26-1-45-19.5t-19-44.5v-641q0-25 18-43.5t43-20.5q24-2 76-59t101-121q68-87 101-120 18-18 31-48t17.5-48.5 13.5-60.5q7-39 12.5-61t19.5-52 34-50q19-19 45-19 46 0 82.5 10.5t60 26 40 40.5 24 45 12 50 5 45 .5 39q0 38-9.5 76t-19 60-27.5 56q-3 6-10 18t-11 22-8 24h277q78 0 135 57t57 135z"
+                        />
+                      </svg>
+                      <span>{{ A.number_of_likes }}</span>
+                    </a>
+                  </button>
+                  {% else %}
+                  <button class="text-sm font-semibold mr-4">
+                    <a
+                      href="{% url 'like_answers' A.id A.question.id %}"
+                      class="like-button"
+                      id="like-button-{{ A.id }}"
+                      onclick="animateLike({{ A.id }})"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 1792 1792"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M320 1344q0-26-19-45t-45-19q-27 0-45.5 19t-18.5 45q0 27 18.5 45.5t45.5 18.5q26 0 45-18.5t19-45.5zm160-512v640q0 26-19 45t-45 19h-288q-26 0-45-19t-19-45v-640q0-26 19-45t45-19h288q26 0 45 19t19 45zm1184 0q0 86-55 149 15 44 15 76 3 76-43 137 17 56 0 117-15 57-54 94 9 112-49 181-64 76-197 78h-129q-66 0-144-15.5t-121.5-29-120.5-39.5q-123-43-158-44-26-1-45-19.5t-19-44.5v-641q0-25 18-43.5t43-20.5q24-2 76-59t101-121q68-87 101-120 18-18 31-48t17.5-48.5 13.5-60.5q7-39 12.5-61t19.5-52 34-50q19-19 45-19 46 0 82.5 10.5t60 26 40 40.5 24 45 12 50 5 45 .5 39q0 38-9.5 76t-19 60-27.5 56q-3 6-10 18t-11 22-8 24h277q78 0 135 57t57 135z"
+                        />
+                      </svg>
+                      <span id="like-count-{{ A.id }}"
+                        >{{ A.number_of_likes }}</span
+                      >
+                    </a>
+                  </button>
+                  {% endif %} {% if request.user == A.user %}
+
+                  <!-- component -->
+                  <div class="flex items-center justify-center h-10">
+                    <div x-data="{ showModal: false }">
+                      <!-- Button to open the modal -->
+                      <button
+                        @click="showModal = true"
+                        class="w-full px-2 py-1 text-sm font-medium text-red-500"
+                      >
+                        Delete
+                      </button>
+                      <!-- Background overlay -->
+                      <div
+                        x-show="showModal"
+                        class="fixed inset-0 transition-opacity"
+                        aria-hidden="true"
+                        @click="showModal = false"
+                      >
+                        <div
+                          class="absolute inset-0 bg-gray-500 opacity-75"
+                        ></div>
+                      </div>
+                      <!-- Modal -->
+                      <div
+                        x-show="showModal"
+                        x-transition:enter="transition ease-out duration-300 transform"
+                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave="transition ease-in duration-200 transform"
+                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        class="fixed z-10 inset-0 overflow-y-auto"
+                        x-cloak
+                      >
+                        <div
+                          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+                        >
+                          <!-- Modal panel -->
+                          <div
+                            class="w-full inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="modal-headline"
+                          >
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                              <!-- Modal content -->
+                              <div class="sm:flex sm:items-start">
+                                <div
+                                  class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                                >
+                                  <!-- Heroicon name: outline/exclamation -->
+                                  <svg
+                                    width="64px"
+                                    height="64px"
+                                    class="h-6 w-6 text-red-600"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 24.00 24.00"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    stroke="#ef4444"
+                                    stroke-width="0.45600000000000007"
+                                  >
+                                    <g
+                                      id="SVGRepo_bgCarrier"
+                                      stroke-width="0"
+                                    ></g>
+                                    <g
+                                      id="SVGRepo_tracerCarrier"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                      <path
+                                        d="M12 7.25C12.4142 7.25 12.75 7.58579 12.75 8V13C12.75 13.4142 12.4142 13.75 12 13.75C11.5858 13.75 11.25 13.4142 11.25 13V8C11.25 7.58579 11.5858 7.25 12 7.25Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                      <path
+                                        d="M12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                      <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M8.2944 4.47643C9.36631 3.11493 10.5018 2.25 12 2.25C13.4981 2.25 14.6336 3.11493 15.7056 4.47643C16.7598 5.81544 17.8769 7.79622 19.3063 10.3305L19.7418 11.1027C20.9234 13.1976 21.8566 14.8523 22.3468 16.1804C22.8478 17.5376 22.9668 18.7699 22.209 19.8569C21.4736 20.9118 20.2466 21.3434 18.6991 21.5471C17.1576 21.75 15.0845 21.75 12.4248 21.75H11.5752C8.91552 21.75 6.84239 21.75 5.30082 21.5471C3.75331 21.3434 2.52637 20.9118 1.79099 19.8569C1.03318 18.7699 1.15218 17.5376 1.65314 16.1804C2.14334 14.8523 3.07658 13.1977 4.25818 11.1027L4.69361 10.3307C6.123 7.79629 7.24019 5.81547 8.2944 4.47643ZM9.47297 5.40432C8.49896 6.64148 7.43704 8.51988 5.96495 11.1299L5.60129 11.7747C4.37507 13.9488 3.50368 15.4986 3.06034 16.6998C2.6227 17.8855 2.68338 18.5141 3.02148 18.9991C3.38202 19.5163 4.05873 19.8706 5.49659 20.0599C6.92858 20.2484 8.9026 20.25 11.6363 20.25H12.3636C15.0974 20.25 17.0714 20.2484 18.5034 20.0599C19.9412 19.8706 20.6179 19.5163 20.9785 18.9991C21.3166 18.5141 21.3773 17.8855 20.9396 16.6998C20.4963 15.4986 19.6249 13.9488 18.3987 11.7747L18.035 11.1299C16.5629 8.51987 15.501 6.64148 14.527 5.40431C13.562 4.17865 12.8126 3.75 12 3.75C11.1874 3.75 10.4379 4.17865 9.47297 5.40432Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                    </g>
+                                  </svg>
+                                </div>
+                                <div
+                                  class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
+                                >
+                                  <h3
+                                    class="text-lg leading-6 font-medium text-gray-900"
+                                    id="modal-headline"
+                                  >
+                                    Delete
+                                  </h3>
+                                  <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                      Delete
+                                      <span class="font-bold"
+                                        >"{{A.content |truncatechars:20}}"</span
+                                      >? This action cannot be undone.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
+                            >
+                              <a href="{% url 'delete_answer' A.id qstn.id %}">
+                                <button
+                                  @click="deleteItem"
+                                  type="button"
+                                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-500 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                >
+                                  Delete
+                                </button>
+                              </a>
+                              <button
+                                @click="showModal = false"
+                                type="button"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+        <!-- 
+        <div class=" hidden lg:flex flex-col flex-shrink-0 w-1/4 py-4 pl-4">
+          <input
+            class="flex items-center h-8 px-2 border border-gray-500 rounded-sm"
+            type="search"
+            placeholder="Search…"
+          />
+          <div>
+            <h3 class="mt-6 font-semibold">Trending</h3>
+            <div class="flex w-full py-4 border-b border-gray-300">
+              <span
+                class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full"
+              ></span>
+              <div class="flex flex-col flex-grow ml-2">
+                <div class="flex text-sm">
+                  <span class="font-semibold">Username</span>
+                  <span class="ml-1">@username</span>
+                </div>
+                <p class="mt-1 text-sm">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, et
+                  dolore magna aliqua.
+                  <a class="underline" href="#">#hashtag</a>
+                </p>
+              </div>
+            </div>
+            <div class="flex w-full py-4 border-b border-gray-300">
+              <span
+                class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full"
+              ></span>
+              <div class="flex flex-col flex-grow ml-2">
+                <div class="flex text-sm">
+                  <span class="font-semibold">Username</span>
+                  <span class="ml-1">@username</span>
+                </div>
+                <p class="mt-1 text-sm">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, et
+                  dolore magna aliqua.
+                  <a class="underline" href="#">#hashtag</a>
+                </p>
+              </div>
+            </div>
+            <div class="flex w-full py-4 border-b border-gray-300">
+              <span
+                class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full"
+              ></span>
+              <div class="flex flex-col flex-grow ml-2">
+                <div class="flex text-sm">
+                  <span class="font-semibold">Username</span>
+                  <span class="ml-1">@username</span>
+                </div>
+                <p class="mt-1 text-sm">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, et
+                  dolore magna aliqua.
+                  <a class="underline" href="#">#hashtag</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+    <!-- Component End  -->
+    <!-- 
+    <a
+      class="fixed flex items-center justify-center h-8 pr-2 pl-1 bg-blue-600 rounded-full bottom-0 right-0 mr-4 mb-4 shadow-lg text-blue-100 hover:bg-blue-600"
+      href="https://twitter.com/lofiui"
+      target="_top"
+    >
+      <div
+        class="flex items-center justify-center h-6 w-6 bg-blue-500 rounded-full"
+      >
+        <svg
+          class="w-4 h-4 fill-current"
+          viewBox="0 0 24 24"
+          class="r-jwli3a r-4qtqp9 r-yyyyoo r-16y2uox r-1q142lx r-8kz0gk r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1srniue"
+        >
+          <g>
+            <path
+              d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"
+            ></path>
+          </g>
+        </svg>
+      </div>
+      <span class="text-sm ml-1 leading-none">@tailwind</span>
+    </a> -->
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2"></script>
+  <!-- <script>
+  function animateLike(answerId) {
+    // Get the like button element by its ID
+    const likeButton = document.getElementById(`like-button-${answerId}`);
+    
+    // Add a CSS class to trigger the animation
+    likeButton.classList.add('animated');
+
+
+    // You may also update the like count
+    // const likeCount = document.getElementById(`like-count-${answerId}`);
+    // Assuming you have an updated like count, you can update it here
+    // likeCount.innerText = updatedLikeCount;
+  }
+</script> -->
+  <!-- <script>
+  function animateLike(answerId) {
+    // Get the like button element by its ID
+    const likeButton = document.getElementById(`like-button-${answerId}`);
+    
+    // Get the current scroll position
+    const scrollY = window.scrollY;
+
+    // Add a CSS class to trigger the animation
+    likeButton.classList.add('animated');
+
+    // Wait for the animation to complete
+    likeButton.addEventListener('animationend', () => {
+      // Restore the scroll position
+      window.scrollTo(0, scrollY);
+    });
+
+    // You may also update the like count
+    // const likeCount = document.getElementById(`like-count-${answerId}`);
+    // Assuming you have an updated like count, you can update it here
+    // likeCount.innerText = updatedLikeCount;
+  }
+</script> -->
+  <script>
+    function animateLike(answerId) {
+      // Remember the current scroll p
+      const likeButton = document.getElementById(`like-button-${answerId}`);
+
+      likeButton.classList.add("animated");
+    }
+  </script>
+  <script>
+    // Function to store the current scroll position
+
+    function storeScrollPosition() {
+      const container = document.getElementById("answer-container");
+      const scrollPosition = container.scrollTop;
+      localStorage.setItem("scrollPosition", scrollPosition);
+    }
+
+    // Function to retrieve and restore the scroll position
+    function restoreScrollPosition() {
+      const scrollPosition = localStorage.getItem("scrollPosition");
+      if (scrollPosition) {
+        window.scrollTo(0, parseInt(scrollPosition));
+        const answerContainer = document.getElementById("answer-container");
+        if (answerContainer) {
+          answerContainer.scrollTop = parseInt(scrollPosition);
+        }
+      }
+    }
+
+    // Attach the storeScrollPosition function to events that trigger a page reload or redirect
+    window.addEventListener("beforeunload", storeScrollPosition);
+    window.addEventListener("unload", storeScrollPosition);
+
+    // Call the restoreScrollPosition function when the page loads
+    window.addEventListener("load", restoreScrollPosition);
+  </script>
+</html>

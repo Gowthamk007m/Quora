@@ -1,0 +1,400 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    /* Define the scrollbar track (the background) */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Define the scrollbar handle (the draggable part) */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    /* Add smooth transition for the scrollbar */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+      transition: background 0.3s ease-in-out;
+    }
+
+    /* Ensure the scrollbar is still visible on hover */
+    ::-webkit-scrollbar-thumb:active {
+      background: #555;
+    }
+
+    /* Make the scrollbar shorter when it's not being hovered */
+    ::-webkit-scrollbar-thumb:vertical {
+      height: 20px; /* Adjust the height as needed */
+    }
+
+    /* Ensure the scrollbar handle is still draggable when it's shorter */
+    ::-webkit-scrollbar-thumb:horizontal {
+      width: 20px; /* Adjust the width as needed */
+    }
+  </style>
+  <body>
+    <div class="flex justify-center w-screen h-screen px-4 text-gray-700">
+      <div class="flex w-full max-w-screen-2xl">
+        <div class="flex flex-col w-44 py-4 pr-3">
+          <a
+            class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300 bg-slate-100"
+            href="{% url 'home_page' %}"
+            >Home</a
+          >
+          <a
+            class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300"
+            href="{% url 'profile_view' %}"
+            >Profile</a
+          >
+
+          {% if request.user.is_authenticated %}
+          <a
+            href="{% url 'logout' %}"
+            class="flex px-3 py-2 mt-2 mt-auto text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+          >
+            <span class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full">
+              {% if request.user.userprofile.profile_picture %}
+              <img
+                src="{{ request.user.userprofile.profile_picture.url }}"
+                class="h-10 w-10 rounded-full object-cover"
+                alt="{{ question.user.username }}'s Profile Picture"
+              />
+              {% else %}
+              <!-- Display a default image or a message if there's no profile picture -->
+              <img
+                src="{% static 'default_image.png' %}"
+                class="h-10 w-10 rounded-full object-cover"
+                alt="Default Profile Picture"
+              />
+              {% endif %}
+            </span>
+            <div class="flex flex-col ml-2 bg">
+              <span class="mt-1 text-sm font-semibold leading-none"
+                >Logout</span
+              >
+              <span class="mt-1 text-xs leading-none">{{user.username}}</span>
+            </div></a
+          >
+          {% else %}
+          <a
+            href="{% url 'login' %}"
+            class="flex px-3 py-2 mt-2 mt-auto text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+            >Login
+          </a>
+          <a
+            href="{% url 'signup' %}"
+            class="flex px-3 py-2 mt-2 text-lg rounded-sm font-medium hover:bg-gray-200"
+            href="#"
+            >Signup</a
+          >
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col flex-grow border-l border-r border-gray-300">
+          <div
+            class="flex justify-between flex-shrink-0 px-8 py-4 border-b border-gray-300"
+          >
+            <h1 class="text-3xl font-semibold text-[#B92B27]">Quora</h1>
+            <!-- <button class="flex items-center h-8 px-2 text-sm bg-gray-300 rounded-sm hover:bg-gray-400">New post</button> -->
+          </div>
+          <div class="flex-grow h-0 overflow-auto">
+            <form method="POST" action="{% url 'create_question' %}">
+              {% csrf_token %}
+              <div class="flex w-full p-8 border-b-4 border-gray-300">
+                <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full">
+                  {% if request.user.userprofile.profile_picture %}
+                  <img
+                    src="{{ request.user.userprofile.profile_picture.url }}"
+                    class="h-12 w-12 rounded-full object-cover"
+                    alt="{{ question.user.username }}'s Profile Picture"
+                  />
+                  {% else %}
+                  <!-- Display a default image or a message if there's no profile picture -->
+                  <img
+                    src="{% static 'default_image.png' %}"
+                    class="h-12 w-12 rounded-full object-cover"
+                    alt="Default Profile Picture"
+                  />
+                  {% endif %}</span
+                >
+                <div class="flex flex-col flex-grow ml-4">
+                  <!-- <textarea
+                    class="p-3 bg-transparent border border-gray-500 rounded-sm mb-2"
+                    name="title"
+                    rows="1"
+                    placeholder="Subject"
+                    required
+                  ></textarea> -->
+                  <textarea
+                    class="p-3 bg-transparent border border-gray-500 rounded-sm"
+                    name="content"
+                    rows="2"
+                    placeholder="Ask a question?"
+                    required
+                  ></textarea>
+                  <div class="flex justify-between mt-2">
+                    <!-- <button class="flex items-center h-8 px-3 text-xs rounded-sm hover:bg-gray-200">Attach</button> -->
+                    <button
+                      class="flex items-center h-8 px-3 text-xs rounded-sm bg-gray-300 hover:bg-gray-400"
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            {% for Q in Questions %}
+            <div class="flex w-full p-8 border-b border-gray-300">
+              <span class="flex-shrink-0 w-14 h-14 bg-gray-400 rounded-full">
+                {% if Q.user.userprofile.profile_picture %}
+                <img
+                  src="{{ Q.user.userprofile.profile_picture.url }}"
+                  class="h-14 w-14 rounded-full object-cover"
+                  alt="{{ question.user.username }}'s Profile Picture"
+                />
+                {% else %}
+                <!-- Display a default image or a message if there's no profile picture -->
+                <img
+                  src="{% static 'default_image.png' %}"
+                  class="h-14 w-14 rounded-full object-cover"
+                  alt="Default Profile Picture"
+                />
+                {% endif %}
+              </span>
+              <div class="flex flex-col flex-grow ml-4">
+                <div class="flex">
+                  {% if request.user == Q.user %}
+
+                  <span class="font-semibold capitalize"
+                    >@{{Q.user}} (You)</span
+                  >
+                  {% else %}
+                  <span class="font-semibold capitalize">@{{Q.user}}</span>
+
+                  {% endif %}
+                  <span class="ml-auto text-sm"
+                    >{{ Q.time_since_created }}</span
+                  >
+                </div>
+                <!-- <p class="mt-1 font-bold text-blue-400 capitalize">
+                  {{Q.title}} ? <a class="underline" href="#"></a>
+                </p> -->
+                <p class="mt-1 text-[#195FAA] font-bold">
+                  {{Q.content}} <a class="underline" href="#"></a>
+                </p>
+                <div class="flex mt-2">
+                  <a
+                    href="{% url 'view_answers' Q.id  %}"
+                    class="ml-0 mr-2 flex text-sm font-semibold items-center cursor-pointer hover:text-[#195FAA]"
+                    >Answers ({{ Q.answer_count }})</a
+                  >
+                  <a
+                    href="{% url 'view_answers' Q.id  %}"
+                    class="ml-2 mr-2 flex text-sm font-semibold items-center cursor-pointer hover:text-[#195FAA]"
+                    >Reply</a
+                  >
+                  {% if request.user == Q.user %}
+
+                  <!-- component -->
+                  <div
+                    class="flex items-center justify-center h-10"
+                    id="delete_btn"
+                  >
+                    <div x-data="{ showModal: false }">
+                      <!-- Button to open the modal -->
+                      <button
+                        @click="showModal = true"
+                        class="w-full px-2 py-1 text-sm font-medium text-red-500"
+                      >
+                        Delete
+                      </button>
+                      <!-- Background overlay -->
+                      <div
+                        x-show="showModal"
+                        class="fixed inset-0 transition-opacity"
+                        aria-hidden="true"
+                        @click="showModal = false"
+                      >
+                        <div
+                          class="absolute inset-0 bg-gray-500 opacity-75"
+                        ></div>
+                      </div>
+                      <!-- Modal -->
+                      <div
+                        x-show="showModal"
+                        x-transition:enter="transition ease-out duration-300 transform"
+                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave="transition ease-in duration-200 transform"
+                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        class="fixed z-10 inset-0 overflow-y-auto"
+                        x-cloak
+                      >
+                        <div
+                          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+                        >
+                          <!-- Modal panel -->
+                          <div
+                            class="w-full inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="modal-headline"
+                          >
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                              <!-- Modal content -->
+                              <div class="sm:flex sm:items-start">
+                                <div
+                                  class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                                >
+                                  <!-- Heroicon name: outline/exclamation -->
+                                  <svg
+                                    width="64px"
+                                    height="64px"
+                                    class="h-6 w-6 text-red-600"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 24.00 24.00"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    stroke="#ef4444"
+                                    stroke-width="0.45600000000000007"
+                                  >
+                                    <g
+                                      id="SVGRepo_bgCarrier"
+                                      stroke-width="0"
+                                    ></g>
+                                    <g
+                                      id="SVGRepo_tracerCarrier"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                      <path
+                                        d="M12 7.25C12.4142 7.25 12.75 7.58579 12.75 8V13C12.75 13.4142 12.4142 13.75 12 13.75C11.5858 13.75 11.25 13.4142 11.25 13V8C11.25 7.58579 11.5858 7.25 12 7.25Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                      <path
+                                        d="M12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                      <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M8.2944 4.47643C9.36631 3.11493 10.5018 2.25 12 2.25C13.4981 2.25 14.6336 3.11493 15.7056 4.47643C16.7598 5.81544 17.8769 7.79622 19.3063 10.3305L19.7418 11.1027C20.9234 13.1976 21.8566 14.8523 22.3468 16.1804C22.8478 17.5376 22.9668 18.7699 22.209 19.8569C21.4736 20.9118 20.2466 21.3434 18.6991 21.5471C17.1576 21.75 15.0845 21.75 12.4248 21.75H11.5752C8.91552 21.75 6.84239 21.75 5.30082 21.5471C3.75331 21.3434 2.52637 20.9118 1.79099 19.8569C1.03318 18.7699 1.15218 17.5376 1.65314 16.1804C2.14334 14.8523 3.07658 13.1977 4.25818 11.1027L4.69361 10.3307C6.123 7.79629 7.24019 5.81547 8.2944 4.47643ZM9.47297 5.40432C8.49896 6.64148 7.43704 8.51988 5.96495 11.1299L5.60129 11.7747C4.37507 13.9488 3.50368 15.4986 3.06034 16.6998C2.6227 17.8855 2.68338 18.5141 3.02148 18.9991C3.38202 19.5163 4.05873 19.8706 5.49659 20.0599C6.92858 20.2484 8.9026 20.25 11.6363 20.25H12.3636C15.0974 20.25 17.0714 20.2484 18.5034 20.0599C19.9412 19.8706 20.6179 19.5163 20.9785 18.9991C21.3166 18.5141 21.3773 17.8855 20.9396 16.6998C20.4963 15.4986 19.6249 13.9488 18.3987 11.7747L18.035 11.1299C16.5629 8.51987 15.501 6.64148 14.527 5.40431C13.562 4.17865 12.8126 3.75 12 3.75C11.1874 3.75 10.4379 4.17865 9.47297 5.40432Z"
+                                        fill="#ef4444"
+                                      ></path>
+                                    </g>
+                                  </svg>
+                                </div>
+                                <div
+                                  class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
+                                >
+                                  <h3
+                                    class="text-lg leading-6 font-medium text-gray-900"
+                                    id="modal-headline"
+                                  >
+                                    Delete
+                                  </h3>
+                                  <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                      Delete
+                                      <span class="font-bold"
+                                        >"{{Q.content |truncatechars:20}}"</span
+                                      >? This action cannot be undone.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
+                            >
+                              <button
+                                @click="deleteItem"
+                                type="button"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-500 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                              >
+                                <a href="{% url 'delete_question' Q.id %}"
+                                  >Delete</a
+                                >
+                              </button>
+                              <button
+                                @click="showModal = false"
+                                type="button"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="flex flex-col flex-shrink-0 w-1/4 py-4 pl-4">
+          <input
+            class="flex items-center h-8 px-2 border border-gray-500 rounded-sm"
+            type="search"
+            placeholder="Search…"
+          />
+          <div>
+            <h3 class="mt-6 font-semibold">Trending</h3>
+
+            {% for R in random_questions %}
+            <a href="{% url 'view_answers' R.id  %}">
+              <div class="flex w-full py-4 border-b border-gray-300">
+                <span class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full">
+                  {% if R.user.userprofile.profile_picture %}
+                  <img
+                    src="{{ R.user.userprofile.profile_picture.url }}"
+                    class="h-10 w-10 rounded-full object-cover"
+                    alt="{{ question.user.username }}'s Profile Picture"
+                  />
+                  {% else %}
+                  <!-- Display a default image or a message if there's no profile picture -->
+                  <img
+                    src="{% static 'default_image.png' %}"
+                    class="h-10 w-10 rounded-full object-cover"
+                    alt="Default Profile Picture"
+                  />
+                  {% endif %}</span
+                >
+                <div class="flex flex-col flex-grow ml-2">
+                  <div class="flex text-sm">
+                    <span class="font-semibold">{{R.user}}</span>
+                  </div>
+                  <p class="mt-1 text-sm">{{R.content}}</p>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Component End  -->
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2"></script>
+</html>

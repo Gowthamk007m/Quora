@@ -65,8 +65,8 @@
           <div
             class="mt-5 flex-wrap bg-slate-500 items-center text-lg break-words text-white"
           >
-            {% if form.errors %} {% for field in form %} {% for error in
-            field.errors %}
+            {% if form.errors %} {% for field in form %} 
+            {% for error in field.errors %}
             <h4>{{ error|escape }}</h4>
             {% endfor %} {% endfor %} {% endif %}
           </div>
